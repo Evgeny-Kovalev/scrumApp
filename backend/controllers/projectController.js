@@ -1,0 +1,87 @@
+const Project = require("../models/Project");
+const User = require("../models/user");
+
+exports.getProjects = async (req, res, next) => {
+    const {userId} = req.query;
+    
+    try {
+        const user = await User.findById(userId)
+        if (!user) next("User not found")
+        
+        const userProjects = await Project.find({ownerId: user._id})
+        return res.status(200).json(userProjects)
+    }
+    catch (e) {
+        next('Failed to get projects!')
+    }
+}
+
+exports.getProject = async (req, res, next) => {
+    const {id} = req.params;
+
+    try {
+        const project = await Project.findById(id)
+        return res.status(200).json(project)
+    }
+    catch(e) {
+        next('Project not found.')
+    }
+}
+
+exports.postProject = async (req, res, next) => {
+    const {project, userId} = req.body;
+    const {title, description} = project;
+
+    try {
+        const user = await User.findById(userId)
+        if (!user) return res.status(404).json({message: "User not found"})
+
+        const projectExist = await Project.findOne({title, ownerId: userId})
+        if (projectExist) return res.status(400).json({message: "A Project with the same title already exists"})
+
+        const newProject = new Project({
+            title,
+            description,
+            ownerId: user._id
+        })
+
+        await newProject.save()
+
+        return res.status(200).json({
+            message: 'Project created successfully.',
+            project: newProject
+        })
+    }
+    catch (e) {
+        next('Failed to create project!')
+    }
+}
+
+exports.putEditProject = async (req, res, next) => {
+    const {id} = req.params
+    const {project} = req.body
+    
+    try {
+        const editedProject = await Project.findByIdAndUpdate(id, project, { new: true })
+        return res.status(200).json({
+            message: 'Project edited successfully',
+            project: editedProject
+        })
+    }
+    catch(e) {
+        next('Failed to edit project.')
+    }
+}
+
+exports.deleteProject = async (req, res, next) => {
+    const {id} = req.params;
+
+    try {
+        const project = await Project.findByIdAndRemove(id)
+        return res.status(200).json({message: 'Project deleted successfully.'})
+    }
+    catch(e) {
+        next('Failed to delete the project.')
+    }
+
+}

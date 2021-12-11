@@ -1,0 +1,41 @@
+<div class="backdrop" *ngIf="taskModalService.show && task" (click)="closeModal()" >
+</div>
+
+<div class="custom-modal" *ngIf="taskModalService.show && task" >
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Task info</h5>
+            <button type="button" class="btn-close" (click)="closeModal()"></button>
+        </div>
+        <div class="modal-body">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="row mb-4">
+                        <div class="col">
+                            <h4>{{task.title}}</h4>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col">
+                            <h4>Description</h4>
+                            <p class="text-muted">{{task.text}}</p>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col">
+                            <h4 class="d-inline m-0 me-2">Status:</h4>
+                            <span class="text-uppercase fs-5">{{task.status || 'None'}}</span>
+                        </div>
+                    </div>
+                    <div class="row mb-3 d-flex align-items-center">
+                        <div class="col">
+                            <h4 class="d-inline m-0 me-2">Story point estimate</h4>
+                            <span *ngIf="task.storyPoint" class="badge bg-primary rounded-pill">4</span>
+                            <span *ngIf="!task.storyPoint" class="lead">None</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

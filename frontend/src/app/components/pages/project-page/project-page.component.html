@@ -1,0 +1,66 @@
+<app-loader [show]="isLoading" ></app-loader>
+<div *ngIf="isError">Error</div>
+
+<ng-container *ngIf="project && !isLoading && !isError" cdkDropListGroup>
+
+    <div *ngIf="isEditMode">
+        <form class="mb-3" [formGroup]="projectForm" (ngSubmit)="onEditProject()" novalidate>
+            <input
+                type="text"
+                class="form-control mb-2"
+                name="title"
+                formControlName="title"
+                required
+            >
+            <input
+                type="text"
+                class="form-control mb-2"
+                name="description"
+                formControlName="description"
+                required
+            >
+
+            <button class="btn btn-success me-2 ms-a" type="submit">Save</button>
+            <button class="btn btn-secondary" (click)="isEditMode = false">Cancel</button>
+        </form>
+    </div>
+
+    <ng-container *ngIf="!isEditMode">
+        <div class="d-flex justify-content-start align-items-center">
+            <h3 class="me-4">{{project.title}}</h3>
+            <div>
+                <button class="btn btn-success btn-sm me-2" type="button" (click)="toggleEditMode()">
+                    <fa-icon [icon]="faEdit"></fa-icon>
+                </button>
+                
+                <button class="btn btn-danger btn-sm" type="button" (click)="onDeleteProject()">
+                    <fa-icon [icon]="faTrash"></fa-icon>
+                </button>
+            </div>
+        </div>
+        
+        <p class="text-muted">{{project.description}}</p>
+    </ng-container>
+    
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Iterations</h3>
+        <a class="btn btn-primary" routerLink="/project/{{project.id}}/iterations/new">New iteration</a>
+    </div>
+    
+    <app-iteration-list [iterations]="iterations" [project]="project"></app-iteration-list>
+    
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Backlog</h3>
+        <a class="btn btn-primary" routerLink="/project/{{project.id}}/tasks/new">New task</a>
+    </div>
+    <app-task-list
+        [tasks]="backlog"
+        [project]="project"
+        cdkDropList
+        [cdkDropListData]="{iterationId: null, tasks: backlog}"
+        (cdkDropListDropped)="drop($event)"
+    >
+    </app-task-list>
+
+</ng-container>
