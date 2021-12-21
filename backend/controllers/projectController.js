@@ -6,7 +6,7 @@ exports.getProjects = async (req, res, next) => {
     
     try {
         const user = await User.findById(userId)
-        if (!user) next("User not found")
+        if (!user) return res.status(400).json({message: "User not found"})
         
         const userProjects = await Project.find({ownerId: user._id})
         return res.status(200).json(userProjects)
@@ -21,10 +21,11 @@ exports.getProject = async (req, res, next) => {
 
     try {
         const project = await Project.findById(id)
+        if (!project) return res.status(400).json({message: 'Project not found'})
         return res.status(200).json(project)
     }
     catch(e) {
-        next('Project not found.')
+        next('Failed to get the project')
     }
 }
 
@@ -34,7 +35,7 @@ exports.postProject = async (req, res, next) => {
 
     try {
         const user = await User.findById(userId)
-        if (!user) return res.status(404).json({message: "User not found"})
+        if (!user) return res.status(400).json({message: "User not found"})
 
         const projectExist = await Project.findOne({title, ownerId: userId})
         if (projectExist) return res.status(400).json({message: "A Project with the same title already exists"})

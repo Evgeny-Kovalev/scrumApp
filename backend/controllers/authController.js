@@ -10,7 +10,7 @@ exports.postSignup = async (req, res, next) => {
         const {email, password, name} = req.body
 
         const user = await User.findOne({email})
-        if (user) return res.status(400).json({message: "User already exists"})
+        if (user) return res.status(401).json({message: "User already exists"})
         
         const hashedPassword = await bcrypt.hash(password, 12)
 
@@ -37,7 +37,7 @@ exports.postSignup = async (req, res, next) => {
         })
     }
     catch(err) {
-        res.status(400).json({message: "Signup failed"})
+        res.status(401).json({message: "Signup failed"})
     }
 }
 
@@ -47,11 +47,11 @@ exports.postLogin = async (req, res, next) => {
         let loadedUser
 
         const user = await User.findOne({email})
-        if (!user) return res.status(300).json({message: "User not found"})
+        if (!user) return res.status(401).json({message: "User not found"})
         loadedUser = user
 
         const isEqual = await bcrypt.compare(password, user.password)
-        if (!isEqual) return res.status(404).json({message: "Email or password is not correnct"})
+        if (!isEqual) return res.status(401).json({message: "Email or password is not correct"})
 
         const token = jwt.sign(
             {
@@ -74,6 +74,6 @@ exports.postLogin = async (req, res, next) => {
             
     }
     catch(err) {
-        res.status(400).json({message: "Login failed"})
+        res.status(401).json({message: "Login failed"})
     }
 }

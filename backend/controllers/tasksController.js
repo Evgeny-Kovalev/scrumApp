@@ -6,10 +6,11 @@ exports.getTask = async (req, res, next) => {
 
     try {
         const task = await Task.findById(taskId)
+        if (!task) return res.status(400).json({message: 'Task not found'})
         return res.status(200).json(task)
     }
     catch(e) {
-        next('Task not found.')
+        next('Failed to get the task')
     }
 }
 
@@ -18,12 +19,14 @@ exports.getTasks = async (req, res, next) => {
 
     try {
         const project = await Project.findById(projectId)
-        if (!project) next("Project not found")
+        if (!project) return res.status(400).json({message: "Project not found"})
         
         const projectTasks = await Task.find({
             projectId: project._id,
             iterationId: (iterationId || { $exists: true })
         },)
+
+        if (!projectTasks) return res.status(400).json({message: 'Tasks not found'})
 
         return res.status(200).json(projectTasks)
     }
@@ -42,7 +45,7 @@ exports.postTask = async (req, res, next) => {
         if (taskExist) return res.status(400).json({message: "A Task with the same title already exists"})
 
         const project = await Project.findById(projectId)
-        if (!project) next("Project not found")
+        if (!project) return res.status(400).json({message: "Project not found"})
 
         const newTask = new Task({
             title, text, projectId, storyPoint,
@@ -68,6 +71,8 @@ exports.putEditTask = async (req, res, next) => {
     const {editedTask} = req.body
     try {
         const task = await Task.findByIdAndUpdate(taskId, editedTask, { new: true })
+        if (!task) return res.status(400).json({message: 'Task not found'})
+
         return res.status(200).json({
             message: 'Task edited successfully',
             task
@@ -82,6 +87,8 @@ exports.deleteTask = async (req, res, next) => {
     const {taskId} = req.params;
     try {
         const task = await Task.findByIdAndRemove(taskId)
+        if (!task) return res.status(400).json({message: 'Task not found'})
+        
         return res.status(200).json({message: 'Task deleted successfully.'})
     }
     catch(e) {

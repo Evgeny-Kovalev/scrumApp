@@ -6,6 +6,8 @@ exports.getIterations = async (req, res, next) => {
     
     try {
         const iterations = await Iteration.find({projectId})
+        if (!iterations) return res.status(400).json({message: 'Iterations not found'})
+        
         return res.status(200).json(iterations)
     }
     catch (e) {
@@ -18,10 +20,12 @@ exports.getIteration = async (req, res, next) => {
 
     try {
         const iteration = await Iteration.findById(iterationId)
+        if (!iteration) return res.status(400).json({message: 'Iteration not found.'})
+
         return res.status(200).json(iteration)
     }
     catch(e) {
-        next('Iteration not found.')
+        next('Failed to get the iteration.')
     }
 }
 
@@ -57,6 +61,8 @@ exports.putEditIteration = async (req, res, next) => {
 
     try {
         const editedIteration = await Iteration.findByIdAndUpdate(iterationId, iteration, { new: true })
+        if (!editedIteration) return res.status(400).json({message: 'Iteration not found'})
+
         return res.status(200).json({
             message: 'Iteration edited successfully',
             iteration: editedIteration
