@@ -1,25 +1,25 @@
-const Mongoose = require("mongoose");
-const Iteration = require("./Iteration");
-const Task = require("./Task");
+const Mongoose = require('mongoose');
+const Iteration = require('./Iteration');
+const Task = require('./Task');
 
 const projectSchema = new Mongoose.Schema({
-    title: {
-        type: String,
-        require: true,
-    },
-    description: {
-        type: String,
-    },
-    ownerId: {
-        type: Mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true,
-    },
-}, {versionKey: false } )
+	title: {
+		type: String,
+		require: true,
+	},
+	description: {
+		type: String,
+	},
+	ownerId: {
+		type: Mongoose.Schema.Types.ObjectId,
+		ref: 'User',
+		required: true,
+	},
+}, { versionKey: false });
 
 projectSchema.post('findOneAndRemove', async (doc) => {
-    await Iteration.deleteMany({projectId: doc._id})
-    await Task.deleteMany({projectId: doc._id})
-})
+	await Iteration.deleteMany({ projectId: doc._id });
+	await Task.deleteMany({ projectId: doc._id });
+});
 
-module.exports = Mongoose.model('Project', projectSchema)
+module.exports = Mongoose.model('Project', projectSchema);
