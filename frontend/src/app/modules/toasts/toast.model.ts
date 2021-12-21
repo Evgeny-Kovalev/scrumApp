@@ -1,14 +1,12 @@
 export class Toast {
-    
-    constructor(
+	constructor(
         private _id: number,
         public title: string,
         public type: string,
         public text: string,
-    ) {}
+	) {}
 
-    public get id() : number {
-        return this._id
-    }
-
+	public get id() : number {
+		return this._id;
+	}
 }

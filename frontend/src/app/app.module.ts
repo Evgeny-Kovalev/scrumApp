@@ -1,3 +1,11 @@
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { DatePipe } from '@angular/common';
 import { AuthModule } from './modules/auth/auth.module';
 import { ToastsModule } from './modules/toasts/toasts.module';
 import { BoardModule } from './modules/board/board.module';
@@ -7,17 +15,6 @@ import { AppRoutingModule } from './app-routing.module';
 
 import { ErrorInterceptor } from './interceptors/error.interceptor';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
-
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http'
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { DragDropModule } from '@angular/cdk/drag-drop';
-
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-
-import { DatePipe } from '@angular/common';
 
 import AppComponent from './app.component';
 import { HeaderComponent } from './components/header/header.component';
@@ -37,49 +34,49 @@ import { IterationShowComponent } from './components/iterations/iteration-show/i
 import { IterationListComponent } from './components/iterations/iteration-list/iteration-list.component';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    HeaderComponent,
-    SidebarComponent,
-    AuthInfoComponent,
-    NotFoundComponent,
-    BoardPageComponent,
-    ProjectPageComponent,
-    HomePageComponent,
-    IterationListComponent,
-    IterationShowComponent,
-    TaskShowComponent,
-    TaskListComponent,
-    IterationItemComponent,
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    FontAwesomeModule,
-    NgbModule,
-    FormsModule,
-    HttpClientModule,
-    ReactiveFormsModule,
-    BoardModule,
-    ToastsModule,
-    AuthModule,
-    SharedModule,
-    ConfirmModule,
-    DragDropModule
-  ],
-  providers: [
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: AuthInterceptor,
-      multi: true
-    },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: ErrorInterceptor,
-      multi: true
-    },
-    DatePipe
-  ],
-  bootstrap: [AppComponent]
+	declarations: [
+		AppComponent,
+		HeaderComponent,
+		SidebarComponent,
+		AuthInfoComponent,
+		NotFoundComponent,
+		BoardPageComponent,
+		ProjectPageComponent,
+		HomePageComponent,
+		IterationListComponent,
+		IterationShowComponent,
+		TaskShowComponent,
+		TaskListComponent,
+		IterationItemComponent,
+	],
+	imports: [
+		BrowserModule,
+		AppRoutingModule,
+		FontAwesomeModule,
+		NgbModule,
+		FormsModule,
+		HttpClientModule,
+		ReactiveFormsModule,
+		BoardModule,
+		ToastsModule,
+		AuthModule,
+		SharedModule,
+		ConfirmModule,
+		DragDropModule,
+	],
+	providers: [
+		{
+			provide: HTTP_INTERCEPTORS,
+			useClass: AuthInterceptor,
+			multi: true,
+		},
+		{
+			provide: HTTP_INTERCEPTORS,
+			useClass: ErrorInterceptor,
+			multi: true,
+		},
+		DatePipe,
+	],
+	bootstrap: [AppComponent],
 })
 export class AppModule { }

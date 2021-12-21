@@ -1,20 +1,19 @@
+import { Component, Input, OnInit } from '@angular/core';
 import { Project } from '../../../models/project.model';
 import { Iteration } from '../../../models/itaration.model';
-import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-iteration-list',
-  templateUrl: './iteration-list.component.html',
-  styleUrls: ['./iteration-list.component.scss']
+	selector: 'app-iteration-list',
+	templateUrl: './iteration-list.component.html',
+	styleUrls: ['./iteration-list.component.scss'],
 })
 export class IterationListComponent implements OnInit {
+	@Input() iterations: Iteration[] | null = null;
 
-  @Input() iterations: Iteration[] | null = null;
-  @Input() project!: Project;
+	@Input() project!: Project;
 
-  constructor() {}
+	constructor() {}
 
-  ngOnInit(): void {
-  }
-
+	ngOnInit(): void {
+	}
 }

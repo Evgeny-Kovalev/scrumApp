@@ -2,15 +2,10 @@ import { ToastsService } from 'src/app/modules/toasts/toasts.service';
 import { transferArrayItem } from '@angular/cdk/drag-drop';
 import { Task } from 'src/app/models/task.model';
 import { HttpClient } from '@angular/common/http';
-import { environment } from './../../environments/environment';
 import { Observable, BehaviorSubject, Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { map, tap } from 'rxjs/operators';
-
-interface ResponseAPI {
-  message: string,
-  task: TaskAPI
-}
+import { environment } from '../../environments/environment';
 
 interface TaskAPI {
   _id: string,
@@ -22,139 +17,142 @@ interface TaskAPI {
   storyPoint: number,
 }
 
+interface ResponseAPI {
+  message: string,
+  task: TaskAPI
+}
+
 @Injectable({
-  providedIn: 'root'
+	providedIn: 'root',
 })
 export class TaskService {
+	private _isDragDisabled: Subject<boolean> = new Subject<boolean>();
 
-  private _isDragDisabled: Subject<boolean> = new Subject<boolean>();
-  readonly isDragDisabled$ = this._isDragDisabled.asObservable();
+	readonly isDragDisabled$ = this._isDragDisabled.asObservable();
 
-  private _tasks: BehaviorSubject<Task[]> = new BehaviorSubject<Task[]>([]);
-  readonly tasks$: Observable<Task[]> = this._tasks.asObservable()
-  private tasks: Task[] = [];
+	private _tasks: BehaviorSubject<Task[]> = new BehaviorSubject<Task[]>([]);
 
-  constructor(
-    private http: HttpClient,
-    private toastsService: ToastsService
-  ) { }
+	readonly tasks$: Observable<Task[]> = this._tasks.asObservable();
 
-  getTaskById(taskId: string): Observable<Task> {
-    return this.http.get(`${environment.apiUrl}/tasks/${taskId}`)
-    .pipe(
-      map( (task: any) => new Task(task._id, task.title, task.text, task.status, task.projectId, task.iterationId, task.storyPoint) )
-    )
-  }
-  createTask(
-    task: {title: string, text: string, projectId: string, storyPoint: number|null},
-    iterationId: string | null = null
-  ): Observable<Task> {
-    return this.http
-    .post<ResponseAPI>(`${environment.apiUrl}/tasks`, { task }, { params: {iterationId: iterationId || ""} })
-    .pipe(
-      map(  (res: ResponseAPI) => {
-        const task: TaskAPI = res.task
-        
-        return new Task(
-          task._id,
-          task.title,
-          task.text,
-          task.status,
-          task.projectId,
-          task.iterationId,
-          task.storyPoint,
-        )
-      })
-    )
-  }
+	private tasks: Task[] = [];
 
-  editTask(
-    taskId: string,
-    editedTask: {
-      title?: string,
-      text?: string,
-      projectId?: string,
-      iterationId?: string|null,
-      status?: string,
-      storyPoint?: number,
-    }
-  ) {
-    return this.http.put<ResponseAPI>(`${environment.apiUrl}/tasks/${taskId}`, {
-      editedTask
-    })
-    .pipe(
-      map(  (res: ResponseAPI) => {
-        const task: TaskAPI = res.task
+	constructor(
+	private http: HttpClient,
+	private toastsService: ToastsService,
+	) { }
 
-        const newTask = new Task(
-          task._id,
-          task.title,
-          task.text,
-          task.status,
-          task.projectId,
-          task.iterationId,
-          task.storyPoint,
-        )
-        const editableTaskIdx = this.tasks.findIndex(t => t.id === taskId)
-        this.tasks[editableTaskIdx] = newTask;
-        this._tasks.next(this.tasks)
-        return newTask
-      })
-    )
-  }
+	getTaskById(taskId: string): Observable<Task> {
+		return this.http.get(`${environment.apiUrl}/tasks/${taskId}`)
+			.pipe(
+				map((task: any) => new Task(task._id, task.title, task.text, task.status, task.projectId, task.iterationId, task.storyPoint)),
+			);
+	}
 
-  getTasks(options: {
-    projectId: string,
-    iterationId?: string,
+	createTask(
+		task: {title: string, text: string, projectId: string, storyPoint: number|null},
+		iterationId: string | null = null,
+	): Observable<Task> {
+		return this.http
+			.post<ResponseAPI>(`${environment.apiUrl}/tasks`, { task }, { params: { iterationId: iterationId || '' } })
+			.pipe(
+				map((res: ResponseAPI) => {
+					const { task } = res;
+
+					return new Task(
+						task._id,
+						task.title,
+						task.text,
+						task.status,
+						task.projectId,
+						task.iterationId,
+						task.storyPoint,
+					);
+				}),
+			);
+	}
+
+	editTask(
+		taskId: string,
+		editedTask: {
+			title?: string,
+			text?: string,
+			projectId?: string,
+			iterationId?: string|null,
+			status?: string,
+			storyPoint?: number,
+		},
+	) {
+		return this.http.put<ResponseAPI>(`${environment.apiUrl}/tasks/${taskId}`, {
+			editedTask,
+		})
+			.pipe(
+				map((res: ResponseAPI) => {
+					const { task } = res;
+
+					const newTask = new Task(
+						task._id,
+						task.title,
+						task.text,
+						task.status,
+						task.projectId,
+						task.iterationId,
+						task.storyPoint,
+					);
+					const editableTaskIdx = this.tasks.findIndex((t) => t.id === taskId);
+					this.tasks[editableTaskIdx] = newTask;
+					this._tasks.next(this.tasks);
+					return newTask;
+				}),
+			);
+	}
+
+	getTasks(options: {
+	projectId: string,
+	iterationId?: string,
   }) {
-    return this.http.get<TaskAPI[]>(`${environment.apiUrl}/tasks`, {params: {...options}})
-    .pipe(
-      map( (tasks: TaskAPI[]) => 
-        tasks.map((task: TaskAPI) => 
-          new Task(task._id, task.title, task.text, task.status, task.projectId, task.iterationId, task.storyPoint))
-      ),
-      tap((tasks: Task[]) => {
-        this.tasks = tasks
-        this._tasks.next(this.tasks);
-        
-      })
-    )
-  }
+		return this.http.get<TaskAPI[]>(`${environment.apiUrl}/tasks`, { params: { ...options } })
+			.pipe(
+				map((tasks: TaskAPI[]) => tasks.map((task: TaskAPI) => new Task(task._id, task.title, task.text, task.status, task.projectId, task.iterationId, task.storyPoint))),
+				tap((tasks: Task[]) => {
+					this.tasks = tasks;
+					this._tasks.next(this.tasks);
+				}),
+			);
+	}
 
-  deleteTask(task: Task) {
-    return this.http.delete(`${environment.apiUrl}/tasks/${task.id}`)
-    .pipe(
-      tap(res => {
-        this.tasks = this.tasks.filter(t => t.id != task.id)
-        this._tasks.next(this.tasks)
-      })
-    )
-  }
+	deleteTask(task: Task) {
+		return this.http.delete(`${environment.apiUrl}/tasks/${task.id}`)
+			.pipe(
+				tap((res) => {
+					this.tasks = this.tasks.filter((t) => t.id !== task.id);
+					this._tasks.next(this.tasks);
+				}),
+			);
+	}
 
-  drop(e: any) {
-    const taskId = e.item.data
-    
-    const startIndex = e.previousIndex
-    const finishIndex = e.currentIndex
-    
-    const prevTasks = e.previousContainer.data.tasks
-    const nextTasks = e.container.data.tasks
-    const nextIterationId = e.container.data.iterationId
-    
-    transferArrayItem(prevTasks, nextTasks, startIndex, finishIndex)
+	drop(e: any) {
+		const taskId = e.item.data;
 
-    this._isDragDisabled.next(true)
+		const startIndex = e.previousIndex;
+		const finishIndex = e.currentIndex;
 
-    this.editTask(taskId, {iterationId: nextIterationId}).subscribe(
-      res => {
-        this._isDragDisabled.next(false)
-      },
-      err => {
-        transferArrayItem(nextTasks, prevTasks, startIndex, finishIndex)
-        this.toastsService.error('Failed to move task!')
-        this._isDragDisabled.next(false)
-      }
-    )
-  }
+		const prevTasks = e.previousContainer.data.tasks;
+		const nextTasks = e.container.data.tasks;
+		const nextIterationId = e.container.data.iterationId;
 
+		transferArrayItem(prevTasks, nextTasks, startIndex, finishIndex);
+
+		this._isDragDisabled.next(true);
+
+		this.editTask(taskId, { iterationId: nextIterationId }).subscribe(
+			(res) => {
+				this._isDragDisabled.next(false);
+			},
+			(err) => {
+				transferArrayItem(nextTasks, prevTasks, startIndex, finishIndex);
+				this.toastsService.error('Failed to move task!');
+				this._isDragDisabled.next(false);
+			},
+		);
+	}
 }

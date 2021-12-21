@@ -1,46 +1,42 @@
 import { BehaviorSubject } from 'rxjs';
 import { Toast } from 'src/app/modules/toasts/toast.model';
 
-
 export class ToastsService {
+	private _toast = new BehaviorSubject<Toast[]>([]);
 
-  private _toast = new BehaviorSubject<Toast[]>([]);
-      
-  readonly toasts$ = this._toast.asObservable();
-  private toasts: Toast[] = [];
+	readonly toasts$ = this._toast.asObservable();
 
-  private nextId = 0;
+	private toasts: Toast[] = [];
 
-  constructor() { }
+	private nextId = 0;
 
-  private custom(
-    title: string,
-    text: string,
-    options: {type: string} = {type: 'success'},
-    delay: number = 2000
-  ) : void {
+	constructor() { }
 
-    const toast = new Toast(++this.nextId, title, options.type, text)
-      this.toasts.push(toast);
-      this._toast.next([...this.toasts])
+	private custom(
+		title: string,
+		text: string,
+		options: {type: string} = { type: 'success' },
+		delay: number = 2000,
+	) : void {
+		const toast = new Toast(++this.nextId, title, options.type, text);
+		this.toasts.push(toast);
+		this._toast.next([...this.toasts]);
 
-      setTimeout(() => {
-        this.remove(toast.id);
-      }, delay)
+		setTimeout(() => {
+			this.remove(toast.id);
+		}, delay);
+	}
 
-  }
+	success(text: string) : void {
+		this.custom('Success!', text);
+	}
 
-  success(text: string) : void {
-    this.custom('Success!', text)
-  }
+	error(text: string) : void {
+		this.custom('Error!', text, { type: 'error' }, 3000);
+	}
 
-  error(text: string) : void {
-    this.custom("Error!", text, {type: "error"}, 3000)
-  }
-  
-  remove(toastId: number) : void {
-    this.toasts = this.toasts.filter(toast => toast.id != toastId);
-    this._toast.next([...this.toasts])
-  }
-
+	remove(toastId: number) : void {
+		this.toasts = this.toasts.filter((toast) => toast.id !== toastId);
+		this._toast.next([...this.toasts]);
+	}
 }

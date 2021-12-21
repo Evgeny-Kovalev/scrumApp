@@ -1,16 +1,15 @@
 import { Iteration } from './itaration.model';
-export class Project {
 
-    iterations: Iteration[] | null = null;
-    
-    constructor(
+export class Project {
+	iterations: Iteration[] | null = null;
+
+	constructor(
         private _id: string,
         public title: string,
-        public description: string
-    ) {}
-    
-    public get id() : string {
-        return this._id;
-    }
-    
+        public description: string,
+	) {}
+
+	public get id() : string {
+		return this._id;
+	}
 }

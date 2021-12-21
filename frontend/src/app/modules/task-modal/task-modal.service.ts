@@ -3,30 +3,30 @@ import { Subject, Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 
 @Injectable({
-  providedIn: 'any'
+	providedIn: 'any',
 })
 export class TaskModalService {
+	show: boolean = false;
 
-    show: boolean = false;
-    private task$: Subject<Task|null> = new Subject<Task|null>();
+	private task$: Subject<Task|null> = new Subject<Task|null>();
 
-    constructor() { }
+	constructor() { }
 
-    getTask(): Observable<Task|null> {
-        return this.task$.asObservable()
-    }
+	getTask(): Observable<Task|null> {
+		return this.task$.asObservable();
+	}
 
-    showTaskModal(task: Task|null) {
-        this.show = true
-        this.task$.next(task)
-    }
+	showTaskModal(task: Task|null) {
+		this.show = true;
+		this.task$.next(task);
+	}
 
-    hideTaskModal() {
-        this.show = false;
-        this.task$.next(null)
-    }
+	hideTaskModal() {
+		this.show = false;
+		this.task$.next(null);
+	}
 
-    toggleModal() {
-        this.show = !this.show
-    }
+	toggleModal() {
+		this.show = !this.show;
+	}
 }

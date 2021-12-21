@@ -5,34 +5,34 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { TaskModalService } from './task-modal.service';
 
 @Component({
-  selector: 'app-task-modal',
-  templateUrl: './task-modal.component.html',
-  styleUrls: ['./task-modal.component.scss']
+	selector: 'app-task-modal',
+	templateUrl: './task-modal.component.html',
+	styleUrls: ['./task-modal.component.scss'],
 })
 export class TaskModalComponent implements OnInit, OnDestroy {
+	faEdit = faEdit;
 
-  faEdit = faEdit
-  faTrash = faTrash
+	faTrash = faTrash;
 
-  task: Task|null = null
-  taskModalSub: Subscription = new Subscription()
+	task: Task|null = null;
 
-  constructor(
+	taskModalSub: Subscription = new Subscription();
+
+	constructor(
     public taskModalService: TaskModalService,
-  ) { }
-  
-  ngOnInit(): void {
+	) { }
 
-    this.taskModalSub = this.taskModalService.getTask().subscribe((task) => {
-      this.task= task
-    })
-  }
-  
-  closeModal() {
-    this.taskModalService.hideTaskModal()
-  }
-  
-  ngOnDestroy(): void {
-    this.taskModalSub.unsubscribe()
-  }
+	ngOnInit(): void {
+		this.taskModalSub = this.taskModalService.getTask().subscribe((task) => {
+			this.task = task;
+		});
+	}
+
+	closeModal() {
+		this.taskModalService.hideTaskModal();
+	}
+
+	ngOnDestroy(): void {
+		this.taskModalSub.unsubscribe();
+	}
 }
